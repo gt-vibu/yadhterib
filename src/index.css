@@ -1,0 +1,174 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-cute: "Fredoka", cursive, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --color-pastel-pink-soft: #ffeef2;
+  --color-pastel-pink-medium: #ffd3e1;
+  --color-pastel-pink-dark: #ff85a1;
+  --color-pastel-blue-soft: #eaf6ff;
+  --color-pastel-blue-medium: #bde0fe;
+  --color-pastel-blue-dark: #5dade2;
+  
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-wiggle: wiggle 0.5s ease-in-out infinite;
+  --animate-sparkle: sparkle 2s ease-in-out infinite;
+  --animate-candle: candle 1.5s ease-in-out infinite;
+  --animate-steam: steam 2.5s ease-in-out infinite;
+  --animate-glow-pulse: glowPulse 2s ease-in-out infinite;
+  --animate-portal: portal 12s linear infinite;
+  --animate-bounce-slow: bounceSlow 2s ease-in-out infinite;
+  --animate-spin-slow: spinSlow 15s linear infinite;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-12px) rotate(3deg); }
+  }
+
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+  }
+
+  @keyframes sparkle {
+    0%, 100% { opacity: 0.3; transform: scale(0.8) rotate(0deg); }
+    50% { opacity: 1; transform: scale(1.2) rotate(180deg); filter: drop-shadow(0 0 4px rgba(255, 235, 100, 0.8)); }
+  }
+
+  @keyframes candle {
+    0%, 100% { transform: scaleX(1) scaleY(1) rotate(-1deg); filter: blur(0.5px) drop-shadow(0 0 6px #ffae19); }
+    50% { transform: scaleX(0.9) scaleY(1.15) rotate(2deg); filter: blur(0.5px) drop-shadow(0 0 10px #ff7b00); }
+  }
+
+  @keyframes steam {
+    0% { transform: translateY(0) scaleX(1) opacity: 0; filter: blur(1px); }
+    25% { opacity: 0.6; }
+    50% { transform: translateY(-25px) scaleX(1.3) opacity: 0.3; filter: blur(2px); }
+    100% { transform: translateY(-50px) scaleX(0.8) opacity: 0; filter: blur(3px); }
+  }
+
+  @keyframes glowPulse {
+    0%, 100% { filter: drop-shadow(0 0 3px rgba(255, 133, 161, 0.4)); transform: scale(1); }
+    50% { filter: drop-shadow(0 0 12px rgba(255, 133, 161, 0.9)); transform: scale(1.02); }
+  }
+
+  @keyframes portal {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.08); }
+    100% { transform: rotate(360deg) scale(1); }
+  }
+
+  @keyframes bounceSlow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+  }
+
+  @keyframes spinSlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Rich Birthday / Memory Photo Entrada classes & Knife Cutting Keyframes */
+  @keyframes slideInLeft {
+    0% { transform: translateX(-150px) rotate(-12deg) scale(0.8); opacity: 0; }
+    100% { transform: translateX(0) rotate(1.5deg) scale(1); opacity: 1; }
+  }
+
+  @keyframes slideInRight {
+    0% { transform: translateX(150px) rotate(12deg) scale(0.8); opacity: 0; }
+    100% { transform: translateX(0) rotate(-1deg) scale(1); opacity: 1; }
+  }
+
+  @keyframes dropSwing {
+    0% { transform: translateY(-200px) rotate(-20deg) scale(0.5); opacity: 0; }
+    60% { transform: translateY(15px) rotate(5deg); }
+    80% { transform: translateY(-5px) rotate(-2deg); }
+    100% { transform: translateY(0) rotate(2deg) scale(1); opacity: 1; }
+  }
+
+  @keyframes zoomTilt3D {
+    0% { transform: scale(0.3) rotateY(90deg) rotateX(20deg); opacity: 0; filter: blur(4px); }
+    100% { transform: scale(1) rotateY(0deg) rotateX(0deg); opacity: 1; filter: blur(0); }
+  }
+
+  @keyframes knifeSlash {
+    0% { transform: translate(12px, -35px) rotate(-60deg); opacity: 0; }
+    25% { transform: translate(2px, -15px) rotate(-35deg); opacity: 1; }
+    65% { transform: translate(-30px, 30px) rotate(20deg); opacity: 1; }
+    100% { transform: translate(-50px, 50px) rotate(40deg); opacity: 0; }
+  }
+
+  @keyframes screenShake {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    10% { transform: translate(-4px, -2px) rotate(-1deg); }
+    20% { transform: translate(-6px, 0px) rotate(1deg); }
+    30% { transform: translate(0px, 4px) rotate(0deg); }
+    40% { transform: translate(4px, -2px) rotate(1deg); }
+    50% { transform: translate(-4px, 4px) rotate(-1deg); }
+    60% { transform: translate(-6px, 0px) rotate(1deg); }
+    70% { transform: translate(4px, 2px) rotate(0deg); }
+    80% { transform: translate(-2px, -4px) rotate(-1deg); }
+    90% { transform: translate(6px, 4px) rotate(1deg); }
+  }
+
+  @keyframes celebratoryBurst {
+    0% { transform: scale(0.9); opacity: 1; }
+    30% { transform: scale(1.15); filter: brightness(1.5) drop-shadow(0 0 25px #ffd3e1); }
+    50% { transform: scale(0.85); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+}
+
+.animate-photo-left {
+  animation: slideInLeft 0.85s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.animate-photo-right {
+  animation: slideInRight 0.85s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.animate-photo-swing {
+  animation: dropSwing 1.1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.animate-photo-3d {
+  perspective: 1000px;
+  animation: zoomTilt3D 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.animate-knife-slash {
+  animation: knifeSlash 0.35s ease-out forwards;
+}
+
+.animate-shake-blast {
+  animation: screenShake 0.4s ease-in-out infinite;
+}
+
+.animate-cake-burst-bounce {
+  animation: celebratoryBurst 0.6s cubic-bezier(0.25, 0.8, 0.25, 1.4) forwards;
+}
+
+/* Base custom interactive styles */
+body {
+  font-family: var(--font-sans);
+  background-color: #fcf6f8;
+  overflow-x: hidden;
+  user-select: none;
+}
+
+/* Custom scrollbars styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #ffeef2;
+}
+::-webkit-scrollbar-thumb {
+  background: #ff85a1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ff5c8a;
+}

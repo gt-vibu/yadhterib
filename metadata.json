@@ -1,0 +1,6 @@
+{
+  "name": "Cinematic Birthday Surprise",
+  "description": "An interactive, cute, and magical birthday adventure with photos, memory lanes, a street food shop, lucky knocks, and a cake cutting celebration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
