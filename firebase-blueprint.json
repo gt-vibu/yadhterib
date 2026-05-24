@@ -1,0 +1,28 @@
+{
+  "entities": {
+    "BirthdayConfig": {
+      "title": "Birthday Configuration",
+      "description": "Customized settings for a cinematic birthday card experience",
+      "type": "object",
+      "properties": {
+        "recipientName": { "type": "string", "description": "The name of the birthday recipient" },
+        "passcode": { "type": "string", "description": "Password to unlock the card" },
+        "age": { "type": "number", "description": "Age of the recipient" },
+        "bgMusicUrl": { "type": "string", "description": "Url to piano loop/instrumental loop" },
+        "finalWishTitle": { "type": "string", "description": "Header title of final card wish" },
+        "finalWishText": { "type": "string", "description": "Body message text of final wish card" },
+        "customPhotos": {
+          "type": "array",
+          "description": "List of birthday custom slideshow photo records containing URL or raw base64 and descriptive handwritten subtitles"
+        }
+      },
+      "required": ["recipientName", "passcode", "age"]
+    }
+  },
+  "firestore": {
+    "/birthday_configs/{configId}": {
+      "schema": "BirthdayConfig",
+      "description": "Saved customizable birthday experiences by short id"
+    }
+  }
+}

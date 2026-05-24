@@ -3,6 +3,8 @@ import { Settings, X, Copy, Check, Upload, RefreshCw, Sparkles, HelpCircle, Link
 import { BirthdayState, DEFAULT_STATE } from "../types";
 import { playSparkle, playKeyTap } from "../utils/audio";
 import { compressStateToDelta } from "../utils/compression";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../lib/firebase";
 
 // Compress base64 images to high quality and good size for server storage
 const compressImageBase64 = (base64Url: string, maxDim = 1000, quality = 0.85): Promise<string> => {
@@ -152,27 +154,62 @@ export default function SettingsPanel({ state, onChange, onReset }: SettingsPane
     playSparkle();
     setIsSaving(true);
     try {
-      const res = await fetch("/api/config/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(state)
-      });
-      if (!res.ok) {
-        throw new Error("Server config save failed");
+      // 1. Generate a clean random 6-character short ID
+      const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      let shortId = "";
+      for (let i = 0; i < 6; i++) {
+        shortId += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
       }
-      const data = await res.json();
-      if (data && data.id) {
-        const shortUrl = `${window.location.origin}${window.location.pathname}#id=${data.id}`;
-        setSharedLink(shortUrl);
-        navigator.clipboard.writeText(shortUrl);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 3000);
-      } else {
-        throw new Error("No short ID returned from backend");
+
+      // 2. Save directly to our unified Cloud Firestore
+      const docRef = doc(db, "birthday_configs", shortId);
+      await setDoc(docRef, state);
+      console.log("Successfully saved birthday experience to Cloud Firestore with ID:", shortId);
+
+      // 3. For complete redundancy, we also sync with the local container filesystem
+      try {
+        await fetch("/api/config/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...state, id: shortId })
+        });
+      } catch (nestedErr) {
+        console.warn("Express backend sync bypassed, proceeding with master Firestore state:", nestedErr);
       }
+
+      // 4. Update local state with the newly minted URL
+      const shortUrl = `${window.location.origin}${window.location.pathname}#id=${shortId}`;
+      setSharedLink(shortUrl);
+      navigator.clipboard.writeText(shortUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+
     } catch (err) {
-      console.error("Could not write config to server, using local fallback compression:", err);
-      // Fallback: Generate the local #code= link so they are not blocked
+      console.error("Could not write config to central Cloud database, trying Express container fallback:", err);
+      
+      // Fallback: Express-only write
+      try {
+        const res = await fetch("/api/config/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(state)
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.id) {
+            const shortUrl = `${window.location.origin}${window.location.pathname}#id=${data.id}`;
+            setSharedLink(shortUrl);
+            navigator.clipboard.writeText(shortUrl);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 3000);
+            return;
+          }
+        }
+      } catch (backendErr) {
+        console.error("Express fallback failed too:", backendErr);
+      }
+
+      // Sub-fallback: Local URL Hash
       try {
         const delta = compressStateToDelta(state);
         const serialized = JSON.stringify(delta);
@@ -183,7 +220,7 @@ export default function SettingsPanel({ state, onChange, onReset }: SettingsPane
         setCopied(true);
         setTimeout(() => setCopied(false), 3000);
       } catch (fallbackError) {
-        alert("Could not generate sharing link. Keep custom texts under standard length or refer to network errors.");
+        alert("Could not generate sharing link. Please verify internet connectivity.");
       }
     } finally {
       setIsSaving(false);

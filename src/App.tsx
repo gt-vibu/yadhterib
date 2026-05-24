@@ -16,6 +16,8 @@ import FinalScene from "./components/FinalScene";
 import { BirthdayState, DEFAULT_STATE } from "./types";
 import { playSparkle, playKeyTap } from "./utils/audio";
 import { decompressDeltaToState } from "./utils/compression";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "./lib/firebase";
 
 type MoviePhase =
   | "PASSCODE"
@@ -49,16 +51,33 @@ export default function App() {
         if (hash.startsWith("#id=")) {
           const configId = hash.substring(4);
           if (configId) {
-            const res = await fetch(`/api/config/${configId}`);
-            if (res.ok) {
-              const parsedConfig = await res.json();
-              if (parsedConfig) {
-                setState(parsedConfig);
-                // Auto update document title for custom name
-                document.title = `${parsedConfig.recipientName}'s Birthday Surprises ✨`;
+            let parsedConfig = null;
+            // 1. First, try reading directly from our unified centralized Cloud Firestore database
+            try {
+              const docRef = doc(db, "birthday_configs", configId);
+              const docSnap = await getDoc(docRef);
+              if (docSnap.exists()) {
+                parsedConfig = docSnap.data();
+                console.log("Successfully retrieved birthday configuration from direct public Cloud Firestore! ✨");
               }
+            } catch (fireError) {
+              console.warn("Could not load from Firestore database, using local server fallback:", fireError);
+            }
+
+            // 2. Secondary container-filesystem fallback if Firestore is not reachable
+            if (!parsedConfig) {
+              const res = await fetch(`/api/config/${configId}`);
+              if (res.ok) {
+                parsedConfig = await res.json();
+              }
+            }
+
+            if (parsedConfig) {
+              setState(parsedConfig as BirthdayState);
+              // Auto update document title for custom name
+              document.title = `${parsedConfig.recipientName}'s Birthday Surprises ✨`;
             } else {
-              console.error("Failed to retrieve customized experience from server id:", configId);
+              console.error("Failed to retrieve customized experience from both Firestore and local server storage for ID:", configId);
             }
           }
         } else if (hash.startsWith("#code=")) {
