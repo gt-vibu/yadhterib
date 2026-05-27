@@ -119,8 +119,11 @@ export default function ThirdGiftStreetFood({ recipientName, onComplete }: Third
 
     const textToType = currentNode.text;
     const interval = setInterval(() => {
-      setTypewriterText((prev) => prev + textToType.charAt(index));
-      index++;
+      if (index < textToType.length) {
+        const char = textToType.charAt(index);
+        setTypewriterText((prev) => prev + char);
+        index++;
+      }
       if (index >= textToType.length) {
         clearInterval(interval);
       }

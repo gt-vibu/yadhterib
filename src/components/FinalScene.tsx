@@ -24,8 +24,11 @@ export default function FinalScene({ state, onRestart }: FinalSceneProps) {
 
     const letterText = state.finalWishText;
     const interval = setInterval(() => {
-      setTypedWish((prev) => prev + letterText.charAt(index));
-      index++;
+      if (index < letterText.length) {
+        const char = letterText.charAt(index);
+        setTypedWish((prev) => prev + char);
+        index++;
+      }
       if (index >= letterText.length) {
         clearInterval(interval);
         setWishAnimFinished(true);

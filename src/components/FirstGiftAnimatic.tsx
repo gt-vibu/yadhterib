@@ -26,8 +26,11 @@ export default function FirstGiftAnimatic({ state, onComplete }: FirstGiftAnimat
     // Smooth timing interval
     const textTarget = currentPhoto.caption;
     const interval = setInterval(() => {
-      setTypewriterText((prev) => prev + textTarget.charAt(index));
-      index++;
+      if (index < textTarget.length) {
+        const char = textTarget.charAt(index);
+        setTypewriterText((prev) => prev + char);
+        index++;
+      }
       if (index >= textTarget.length) {
         clearInterval(interval);
         setIsAnimating(false);
