@@ -7,7 +7,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
 // Compress base64 images to high quality and good size for server storage
-const compressImageBase64 = (base64Url: string, maxDim = 1000, quality = 0.85): Promise<string> => {
+const compressImageBase64 = (base64Url: string, maxDim = 450, quality = 0.6): Promise<string> => {
   return new Promise((resolve) => {
     if (!base64Url.startsWith("data:image/")) {
       resolve(base64Url);
@@ -57,10 +57,22 @@ export default function SettingsPanel({ state, onChange, onReset }: SettingsPane
   const [sharedLink, setSharedLink] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
+  // Clear stale generated links and browser URL hashes on configuration changes
+  const invalidateSharedLink = () => {
+    setSharedLink("");
+    if (window.location.hash) {
+      try {
+        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      } catch (e) {
+        console.warn("Could not replace browser history state:", e);
+      }
+    }
+  };
+
   // Handle single field change
   const handleChange = (key: keyof BirthdayState, value: any) => {
     playKeyTap();
-    setSharedLink(""); // Invalidate previously generated link on edits
+    invalidateSharedLink(); // Invalidate previously generated link on edits
     onChange({
       ...state,
       [key]: value
@@ -72,7 +84,7 @@ export default function SettingsPanel({ state, onChange, onReset }: SettingsPane
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setSharedLink(""); // Reset stale link
+    invalidateSharedLink(); // Reset stale link
     const reader = new FileReader();
     reader.onload = async (event) => {
       if (event.target?.result) {
@@ -80,7 +92,7 @@ export default function SettingsPanel({ state, onChange, onReset }: SettingsPane
         try {
           const rawBase64 = event.target.result as string;
           // Apply maximum-clarity HD compression
-          const compressedUrl = await compressImageBase64(rawBase64, 1000, 0.85);
+          const compressedUrl = await compressImageBase64(rawBase64, 450, 0.6);
           const updatedPhotos = [...state.customPhotos];
           updatedPhotos[index] = {
             ...updatedPhotos[index],
@@ -110,7 +122,7 @@ export default function SettingsPanel({ state, onChange, onReset }: SettingsPane
 
   // Handle photo URL or caption changes
   const handlePhotoChange = (index: number, field: "url" | "caption", value: string) => {
-    setSharedLink(""); // Reset stale link
+    invalidateSharedLink(); // Reset stale link
     const updatedPhotos = [...state.customPhotos];
     updatedPhotos[index] = {
       ...updatedPhotos[index],
@@ -379,7 +391,7 @@ export default function SettingsPanel({ state, onChange, onReset }: SettingsPane
                                     ...state,
                                     customPhotos: updatedPhotos
                                   });
-                                  setSharedLink(""); // Reset stale link
+                                  invalidateSharedLink(); // Reset stale link
                                 }
                               }}
                               className="flex items-center gap-1 cursor-pointer text-[11px] text-rose-500 hover:text-rose-600 bg-white border border-rose-100 hover:bg-rose-50/50 px-2.5 py-1 rounded-full shadow-xs transition-colors"
@@ -458,7 +470,7 @@ export default function SettingsPanel({ state, onChange, onReset }: SettingsPane
                           ...state,
                           customPhotos: updatedPhotos
                         });
-                        setSharedLink(""); // Reset stale link
+                        invalidateSharedLink(); // Reset stale link
                       }}
                       className="w-full py-2.5 border-2 border-dashed border-pink-200 hover:border-pink-300 text-pink-500 hover:text-pink-600 rounded-xl font-cute font-bold text-xs bg-pink-50/20 hover:bg-pink-50/50 transition-all flex items-center justify-center gap-1.5 cursor-pointer mt-2"
                     >

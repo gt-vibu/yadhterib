@@ -32,11 +32,14 @@ async function startServer() {
         return res.status(400).json({ error: "Invalid configuration state payload" });
       }
 
-      // Generate a clean, extremely short random ID (5 alphanumeric characters)
-      const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-      let shortId = "";
-      for (let i = 0; i < 6; i++) {
-        shortId += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+      // Accept client-provided ID for redundancy consistency, or fallback to auto-generated short ID
+      let shortId = configState.id;
+      if (typeof shortId !== "string" || !/^[a-zA-Z0-9_-]{3,50}$/.test(shortId)) {
+        const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        shortId = "";
+        for (let i = 0; i < 6; i++) {
+          shortId += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+        }
       }
 
       // Store in memory

@@ -40,16 +40,26 @@ export function compressStateToDelta(state: BirthdayState): CompressedDelta {
   state.customPhotos.forEach((photo) => {
     const defaultPhoto = DEFAULT_PHOTOS.find((p) => p.id === photo.id);
     if (!defaultPhoto) {
-      // It's a custom photo - only take the caption, never take the custom image URL/address
-      modifiedPhotos.push({
+      // It's a custom photo - only take the caption, and take URL if it is a short web link (not massive base64)
+      const item: { i: string; u?: string; c?: string } = {
         i: photo.id,
         c: photo.caption
-      });
+      };
+      if (photo.url && !photo.url.startsWith("data:")) {
+        item.u = photo.url;
+      }
+      modifiedPhotos.push(item);
     } else {
       const isCapDiff = photo.caption !== defaultPhoto.caption;
-      if (isCapDiff) {
+      const isUrlDiff = photo.url !== defaultPhoto.url;
+      if (isCapDiff || isUrlDiff) {
         const item: { i: string; u?: string; c?: string } = { i: photo.id };
-        item.c = photo.caption;
+        if (isCapDiff) {
+          item.c = photo.caption;
+        }
+        if (isUrlDiff && photo.url && !photo.url.startsWith("data:")) {
+          item.u = photo.url;
+        }
         modifiedPhotos.push(item);
       }
     }
