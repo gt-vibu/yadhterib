@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Settings, X, Copy, Check, Upload, RefreshCw, Sparkles, HelpCircle, Link as LinkIcon, Info } from "lucide-react";
+import { Settings, X, Copy, Check, Upload, RefreshCw, Sparkles, HelpCircle, Link as LinkIcon, Info, Plus, Trash2 } from "lucide-react";
 import { BirthdayState, DEFAULT_STATE } from "../types";
 import { playSparkle, playKeyTap } from "../utils/audio";
 import { compressStateToDelta } from "../utils/compression";
@@ -358,7 +358,7 @@ export default function SettingsPanel({ state, onChange, onReset }: SettingsPane
               {activeTab === "photos" && (
                 <div className="space-y-4">
                   <span className="text-xs font-cute text-neutral-500 block mb-2 font-medium">
-                    Upload photos (JPEG/PNG) or paste public web image links.
+                    Upload photos (JPEG/PNG) or paste public web image links. You can add up to 10 photos of beautiful memories! ✨
                   </span>
 
                   {state.customPhotos.map((photo, index) => (
@@ -368,17 +368,40 @@ export default function SettingsPanel({ state, onChange, onReset }: SettingsPane
                           Photo Frame #{index + 1}
                         </span>
                         
-                        {/* File upload trigger */}
-                        <label className="flex items-center gap-1 cursor-pointer text-[11px] text-pink-600 hover:text-pink-700 bg-white border border-pink-100 px-2.5 py-1 rounded-full shadow-xs">
-                          <Upload className="w-3 h-3" />
-                          <span>Upload File</span>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handlePhotoUpload(index, e)}
-                            className="hidden"
-                          />
-                        </label>
+                        <div className="flex items-center gap-1.5">
+                          {state.customPhotos.length > 1 && (
+                            <button
+                              onClick={() => {
+                                playKeyTap();
+                                if (confirm(`Are you sure you want to delete Photo Frame #${index + 1}? 💖`)) {
+                                  const updatedPhotos = state.customPhotos.filter((_, i) => i !== index);
+                                  onChange({
+                                    ...state,
+                                    customPhotos: updatedPhotos
+                                  });
+                                  setSharedLink(""); // Reset stale link
+                                }
+                              }}
+                              className="flex items-center gap-1 cursor-pointer text-[11px] text-rose-500 hover:text-rose-600 bg-white border border-rose-100 hover:bg-rose-50/50 px-2.5 py-1 rounded-full shadow-xs transition-colors"
+                              title="Delete this photo frame"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                              <span>Delete</span>
+                            </button>
+                          )}
+
+                          {/* File upload trigger */}
+                          <label className="flex items-center gap-1 cursor-pointer text-[11px] text-pink-600 hover:text-pink-700 bg-white border border-pink-100 px-2.5 py-1 rounded-full shadow-xs transition-colors">
+                            <Upload className="w-3 h-3" />
+                            <span>Upload File</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handlePhotoUpload(index, e)}
+                              className="hidden"
+                            />
+                          </label>
+                        </div>
                       </div>
 
                       {/* Display thumbnail / input info */}
@@ -419,6 +442,34 @@ export default function SettingsPanel({ state, onChange, onReset }: SettingsPane
                       </div>
                     </div>
                   ))}
+
+                  {/* Add Photo Button / Cap */}
+                  {state.customPhotos.length < 10 ? (
+                    <button
+                      onClick={() => {
+                        playSparkle();
+                        const updatedPhotos = [...state.customPhotos];
+                        updatedPhotos.push({
+                          id: "custom_" + Date.now() + "_" + Math.floor(Math.random() * 1000),
+                          url: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&auto=format&fit=crop&q=80",
+                          caption: "We treasure every single magical memory together! 💖"
+                        });
+                        onChange({
+                          ...state,
+                          customPhotos: updatedPhotos
+                        });
+                        setSharedLink(""); // Reset stale link
+                      }}
+                      className="w-full py-2.5 border-2 border-dashed border-pink-200 hover:border-pink-300 text-pink-500 hover:text-pink-600 rounded-xl font-cute font-bold text-xs bg-pink-50/20 hover:bg-pink-50/50 transition-all flex items-center justify-center gap-1.5 cursor-pointer mt-2"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add New Photo Frame ({state.customPhotos.length}/10)</span>
+                    </button>
+                  ) : (
+                    <div className="p-3 border border-dashed border-neutral-200 text-center rounded-xl bg-neutral-50 text-[11px] text-neutral-400 font-medium font-cute">
+                      🔒 Maximum of 10 memory photo frames reached!
+                    </div>
+                  )}
                 </div>
               )}
 

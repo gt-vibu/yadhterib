@@ -82,17 +82,17 @@ export default function MiddleGiftDoor({ onDoorOpened }: MiddleGiftDoorProps) {
             🚪 Secret Corridor
           </span>
           <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-            Knock the Door! 🚪✨
+            knock the door as your lucky number 🚪✨
           </h2>
           <p className="text-xs text-neutral-400 max-w-xs mx-auto">
-            A lucky key counts inside standard locks. Tap the door exactly <strong className="text-amber-400">5 times</strong> to release the magic.
+            A lucky key counts inside standard locks. Tap the door to release the magic.
           </p>
         </div>
 
         {/* Lucky Knocks Counter Display */}
         <div className="bg-amber-950/80 border border-amber-700/60 rounded-full px-5 py-2 font-mono flex items-center justify-center gap-2 shadow-inner text-amber-300">
-          <span className="text-[11px] font-bold uppercase tracking-wider font-cute">Lucky Knocks:</span>
-          <span className="text-sm font-bold">{knocks} / {targetKnocks}</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider font-cute">Knocks Registered:</span>
+          <span className="text-sm font-bold">{knocks}</span>
         </div>
 
         {/* Interactive Magical Mystery Door Frame */}

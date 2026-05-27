@@ -131,7 +131,7 @@ export default function CakeTeleportation({ targetAge, recipientName, onCelebrat
           }`}>
             {isCelebrated 
               ? `Hooray! Bhoomika's cake exploded with beautiful wishes! ✨` 
-              : `Tap the floating cake exactly ${targetAge} times! Each tap slashes the cake!`}
+              : "cut the cake as the number of years you have grown beautiful"}
           </p>
         </div>
 
@@ -141,8 +141,8 @@ export default function CakeTeleportation({ targetAge, recipientName, onCelebrat
             ? "bg-yellow-500/10 border-yellow-500/30 text-yellow-300" 
             : "bg-white border-pink-100 text-pink-500"
         }`}>
-          <span className="text-[11px] font-bold uppercase tracking-wider font-cute">Slash Meter:</span>
-          <span className="text-sm font-bold">{cuts} / {targetAge}</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider font-cute">Cake Cuts Made:</span>
+          <span className="text-sm font-bold">{cuts}</span>
         </div>
 
         {/* Teleportation Portal & Multi-tier HUGE Cake interaction */}

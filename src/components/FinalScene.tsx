@@ -63,18 +63,26 @@ export default function FinalScene({ state, onRestart }: FinalSceneProps) {
           style={{ animation: "float 6s ease-in-out infinite" }}
         >
           <div className="w-full aspect-square bg-zinc-950 rounded-lg overflow-hidden border border-zinc-800 relative shadow-inner">
-            {state.customPhotos && state.customPhotos[3] ? (
-              <img
-                src={state.customPhotos[3].url}
-                alt="Final Celebration Scene portrait"
-                referrerPolicy="no-referrer"
-                className="w-full h-full object-cover filter brightness-95"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-zinc-900 text-yellow-300">
-                ⭐
-              </div>
-            )}
+            {(() => {
+              const finalPhoto = state.customPhotos && state.customPhotos.length > 0
+                ? state.customPhotos[state.customPhotos.length - 1]
+                : null;
+              if (finalPhoto && finalPhoto.url) {
+                return (
+                  <img
+                    src={finalPhoto.url}
+                    alt="Final Celebration Scene portrait"
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover filter brightness-95"
+                  />
+                );
+              }
+              return (
+                <div className="w-full h-full flex items-center justify-center bg-zinc-900 text-yellow-300">
+                  ⭐
+                </div>
+              );
+            })()}
             {/* Corner ambient sparkly lights */}
             <div className="absolute top-2 right-2 text-yellow-300 animate-pulse text-sm">✨</div>
             <div className="absolute bottom-2 left-2 text-blue-300 animate-pulse text-xs">⭐</div>
